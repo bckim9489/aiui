@@ -14,9 +14,7 @@ function App() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const trimmed = prompt.trim()
-    if (!trimmed || uiState === 'loading') {
-      return
-    }
+    if (!trimmed || uiState === 'loading') return
 
     setUiState('loading')
     setError(null)
@@ -39,7 +37,7 @@ function App() {
 
       setCode(payload.code)
       setUiState('rendering')
-      setResetKey((previous) => previous + 1)
+      setResetKey((prev) => prev + 1)
     } catch (err) {
       const message =
         err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.'
@@ -54,70 +52,52 @@ function App() {
     setCode(null)
     setError(null)
     setUiState('idle')
-    setResetKey((previous) => previous + 1)
+    setResetKey((prev) => prev + 1)
   }
 
-  const isLoading = uiState === 'loading'
+  const showPrompt = uiState === 'idle' || uiState === 'error'
+  const showFrame = uiState === 'rendering' && !!code
+  const showLoading = uiState === 'loading'
 
   return (
     <div className="app-shell">
-      <header className="app-header">
-        <div className="branding">
-          <span className="branding-dot" />
-          <div>
-            <p className="branding-label">Dynamic UI MVP</p>
-            <h1>AI UI 실험실</h1>
-          </div>
-        </div>
-        <button
-          type="button"
-          className="secondary-btn"
-          onClick={handleReset}
-          disabled={isLoading}
-        >
-          초기화
-        </button>
-      </header>
-
-      <main className="app-main">
-        <form className="prompt-form" onSubmit={handleSubmit}>
-          <input
-            className="prompt-input"
-      placeholder="예) 재고 보여줘, 비밀번호 변경 화면 만들어줘"
-            value={prompt}
-            onChange={(event) => setPrompt(event.target.value)}
-            disabled={isLoading}
-          />
-          <button
-            type="submit"
-            className="primary-btn"
-            disabled={isLoading || !prompt.trim()}
-          >
-            {isLoading ? '생성 중...' : '실행'}
-          </button>
-        </form>
-
-        {error && <p className="status status-error">{error}</p>}
-        {uiState === 'loading' && (
-          <p className="status status-info">AI가 UI를 생성하고 있습니다…</p>
-        )}
-
-        <section className="preview-panel">
-          {uiState === 'rendering' && code ? (
-            <SandboxFrame key={resetKey} code={code} />
-          ) : (
-            <div className="preview-placeholder">
-              <h2>어떤 화면을 보고 싶나요?</h2>
-              <p>프롬프트를 입력하면 실시간으로 UI가 생성됩니다.</p>
-              <ul>
-                <li>“재고 현황 대시보드 보여줘”</li>
-                <li>“비밀번호 변경 화면 만들어줘”</li>
-                <li>“사용자 관리 리스트 생성해줘”</li>
-              </ul>
-            </div>
-          )}
+      {showPrompt && (
+        <section className="center-stage">
+          <form className="prompt-form prompt-form-large" onSubmit={handleSubmit}>
+            <input
+              className="prompt-input"
+              placeholder="예) 재고 보여줘, 비밀번호 변경 화면 만들어줘"
+              value={prompt}
+              onChange={(event) => setPrompt(event.target.value)}
+              disabled={showLoading}
+            />
+            <button
+              type="submit"
+              className="primary-btn"
+              disabled={showLoading || !prompt.trim()}
+            >
+              {showLoading ? '생성 중...' : '실행'}
+            </button>
+          </form>
+          {error && <p className="status status-error">{error}</p>}
         </section>
-      </main>
+      )}
+
+      {showLoading && (
+        <div className="loader-panel">
+          <p className="status status-info">AI가 UI를 생성하고 있습니다…</p>
+        </div>
+      )}
+
+      {showFrame && code && (
+        <section className="preview-panel">
+          <SandboxFrame key={resetKey} code={code} />
+        </section>
+      )}
+
+      <button type="button" className="floating-reset" onClick={handleReset}>
+        초기화
+      </button>
     </div>
   )
 }
