@@ -72,16 +72,18 @@
           rootElement.appendChild(placeholder)
         }
 
+        const API_BASE = 'http://localhost:9595'
+
         const createApi = () => ({
           get: (url) =>
-            fetch(url).then((response) => {
+            fetch(API_BASE + url).then((response) => {
               if (!response.ok) {
                 throw new Error('API 요청 실패')
               }
               return response.json()
             }),
           post: (url, body) =>
-            fetch(url, {
+            fetch(API_BASE + url, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(body ?? {})

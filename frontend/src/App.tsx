@@ -22,7 +22,7 @@ function App() {
     setError(null)
 
     try {
-      const response = await fetch('/ui/code', {
+      const response = await fetch('http://localhost:9595/ui/code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: trimmed })
@@ -83,7 +83,7 @@ function App() {
         <form className="prompt-form" onSubmit={handleSubmit}>
           <input
             className="prompt-input"
-            placeholder="예) 재고 보여줘, 비밀번호 변경 화면 만들어줘"
+      placeholder="예) 재고 보여줘, 비밀번호 변경 화면 만들어줘"
             value={prompt}
             onChange={(event) => setPrompt(event.target.value)}
             disabled={isLoading}
