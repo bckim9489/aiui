@@ -103,6 +103,7 @@
 
           try {
             const compiled = Babel.transform(code, {
+              filename: 'generated.tsx',
               presets: ['react', 'typescript'],
               plugins: ['transform-modules-commonjs'],
               sourceType: 'module'
