@@ -17,12 +17,6 @@ export function SandboxFrame({ code }: SandboxFrameProps) {
     const host = hostRef.current
     if (!host) return
 
-    // Tear down previous render
-    if (reactRootRef.current) {
-      reactRootRef.current.unmount()
-      reactRootRef.current = null
-    }
-
     try {
       const compiled = Babel.transform(code, {
         filename: 'generated.tsx',
@@ -51,18 +45,19 @@ export function SandboxFrame({ code }: SandboxFrameProps) {
         throw new Error('React 컴포넌트를 찾을 수 없습니다.')
       }
 
-      const root = createRoot(host)
+      const root = reactRootRef.current ?? createRoot(host)
       reactRootRef.current = root
       setError(null)
 
+      const API_BASE = 'http://localhost:9595'
       const api = {
         get: (url: string) =>
-          fetch(url).then((res) => {
+          fetch(API_BASE + url).then((res) => {
             if (!res.ok) throw new Error('API 요청 실패')
             return res.json()
           }),
         post: (url: string, body?: unknown) =>
-          fetch(url, {
+          fetch(API_BASE + url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body ?? {})
