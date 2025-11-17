@@ -85,6 +85,7 @@ function App() {
 
       {showLoading && (
         <div className="loader-panel">
+          <div className="spinner" aria-label="로딩 중" />
           <p className="status status-info">AI가 UI를 생성하고 있습니다…</p>
         </div>
       )}
